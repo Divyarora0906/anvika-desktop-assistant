@@ -1,0 +1,33 @@
+# Node
+node_modules/
+**/node_modules/
+
+# Build output
+dist/
+build/
+out/
+release/
+
+# Logs
+logs/
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Env / secrets
+.env
+*.env
+
+# Electron build files
+*.exe
+*.dmg
+*.AppImage
+
+# IDE configs
+.vscode/
+.idea/
+
+# Client build
+client/dist/

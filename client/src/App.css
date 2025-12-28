@@ -1,0 +1,14 @@
+#anvika_img {
+  height: 350px;
+  transform: scaleX(-1);
+  position: absolute;
+  bottom: 0px;
+}
+.sleep{
+  left: -190px;
+  transition: all 1s linear;
+}
+.awake{
+  left: 0px;
+  transition: all 1s linear;
+}
