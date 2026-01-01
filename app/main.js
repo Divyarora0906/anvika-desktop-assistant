@@ -13,8 +13,8 @@ function createWindow() {
   const { width: screenW, height: screenH } =
     screen.getPrimaryDisplay().workAreaSize;
 
-  const winW = 1120;
-  const winH = 820;
+  const winW = 320;
+  const winH = 420;
 
   win = new BrowserWindow({
     width: winW,
