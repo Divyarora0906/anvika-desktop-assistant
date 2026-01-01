@@ -1,56 +1,73 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import img from "/Anvika.png";
 import "./App.css";
-import { useWhisperSTT } from "./hooks/useOfflineWhisper";
+import { useAssistant } from "./hooks/WakeWord";
 
 export default function App() {
-  const [awake, setAwake] = useState(false);
-
+  // Use our new master hook instead of the raw whisper hook
   const {
-    loadingModel,
-    listening,
     transcript,
+    listening,
+    isAwake,      // true after "Hey Anvika" is heard
+    voskReady,    // true when the wake-word engine is active
+    loadingModel, // true when Whisper GPU is loading
     error,
-    start,
-    stop,
     reset,
-  } = useWhisperSTT("Xenova/whisper-base");
+  } = useAssistant();
+
+  // Log to console for debugging the "Yes Sir" handshake
+  useEffect(() => {
+    if (isAwake) {
+      console.log("Anvika is now ACTIVE and listening for commands.");
+    }
+  }, [isAwake]);
 
   return (
-    <div>
-      <img
-        src={img}
-        id="anvika_img"
-        className={awake ? "awake" : "sleep"}
-      />
+    <div className="container">
+      {/* 1. The Dynamic Image */}
+      <div className="avatar-container">
+        <img
+          src={img}
+          id="anvika_img"
+          // "awake" class can trigger a CSS glow or pulse
+          className={isAwake ? "awake pulse" : "sleep grayscale"}
+          alt="Anvika AI"
+        />
+        <div className={`status-ring ${isAwake ? "active" : ""}`}></div>
+      </div>
 
-      <p>
-        {loadingModel
-          ? "Loading offline model…"
-          : listening
-          ? "Listening…"
-          : "Idle"}
-      </p>
+      {/* 2. Real-time Status */}
+      <div className="status-box">
+        <p className="status-text">
+          {!voskReady ? "⚙️ Initializing Engine..." : 
+           loadingModel ? "🧠 Loading Whisper (GPU)..." : 
+           listening ? "🎤 Listening to you, Sir..." : 
+           "💤 Sleeping (Say 'Hey Anvika')"}
+        </p>
+      </div>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {/* 3. Error Handling */}
+      {error && <p className="error-message">⚠️ {error}</p>}
 
-      <button onClick={() => setAwake(true)}>Awake</button>
-      <button onClick={() => setAwake(false)}>Sleep</button>
+      {/* 4. The Transcript (Hindi/English) */}
+      <div className="transcript-container">
+        <h3>Transcript</h3>
+        <div className="transcript-content">
+          {transcript || (isAwake ? "..." : "Waiting for 'Hey Anvika'...")}
+        </div>
+      </div>
 
-      <br />
+      {/* 5. Manual Controls (Optional) */}
+      <div className="controls">
+        <button className="btn-reset" onClick={reset}>
+          ♻ Reset Conversation
+        </button>
+      </div>
 
-      <button disabled={loadingModel || listening} onClick={start}>
-        🎤 Start Listening
-      </button>
-
-      <button disabled={!listening} onClick={stop}>
-        🛑 Stop
-      </button>
-
-      <button onClick={reset}>♻ Reset Transcript</button>
-
-      <h3>Transcript:</h3>
-      <p>{transcript}</p>
+      {/* 6. Power Note */}
+      <footer className="footer">
+        {isAwake ? "GPU Active" : "Power Saving: GPU Idle"}
+      </footer>
     </div>
   );
 }
